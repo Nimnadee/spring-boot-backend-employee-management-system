@@ -1,40 +1,24 @@
 package net.javaguides.ems.service;
 
-import net.javaguides.ems.entity.Employee;
-import net.javaguides.ems.repository.EmployeeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
+import net.javaguides.ems.model.dto.request.EmployeeRequest;
+import  net.javaguides.ems.model.dto.response.EmployeeResponse;
 import java.util.List;
-import java.util.Optional;
 
-@Service
-public class EmployeeService {
+public interface EmployeeService {
 
-    private final EmployeeRepository employeeRepository;
-
-    @Autowired
-    public EmployeeService(EmployeeRepository employeeRepository) {
-        this.employeeRepository = employeeRepository;
-    }
+    // Create a new employee
+    EmployeeResponse createEmployee(EmployeeRequest employeeRequest);
 
     // Get all employees
-    public List<Employee> getAllEmployees() {
-        return employeeRepository.findAll();
-    }
+    List<EmployeeResponse> getAllEmployees();
 
     // Get employee by ID
-    public Optional<Employee> getEmployeeById(Long id) {
-        return employeeRepository.findById(id);
-    }
+    EmployeeResponse getEmployeeById(Long id);
 
-    // Save or update employee
-    public Employee saveEmployee(Employee employee) {
-        return employeeRepository.save(employee);
-    }
+    // Update employee
+    EmployeeResponse updateEmployee(Long id, EmployeeRequest employeeRequest);
 
     // Delete employee
-    public void deleteEmployee(Long id) {
-        employeeRepository.deleteById(id);
-    }
+    void deleteEmployee(Long id);
 }

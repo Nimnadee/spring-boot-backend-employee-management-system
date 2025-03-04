@@ -1,5 +1,6 @@
 package net.javaguides.ems.controller;
-import net.javaguides.ems.entity.Employee;
+import net.javaguides.ems.model.dto.request.EmployeeRequest;
+import net.javaguides.ems.model.dto.response.EmployeeResponse;
 import net.javaguides.ems.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -7,11 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/employees")
-@CrossOrigin(origins = "http://localhost:3000") // Allow requests from React frontend
+@CrossOrigin(origins = "http://localhost:3000") // For React frontend
 public class EmployeeController {
 
     private final EmployeeService employeeService;
@@ -21,52 +21,38 @@ public class EmployeeController {
         this.employeeService = employeeService;
     }
 
-    // GET all employees
+    // Create a new employee
+    @PostMapping
+    public ResponseEntity<EmployeeResponse> createEmployee(@RequestBody EmployeeRequest employeeRequest) {
+        EmployeeResponse newEmployee = employeeService.createEmployee(employeeRequest);
+        return new ResponseEntity<>(newEmployee, HttpStatus.CREATED);
+    }
+
+    // Get all employees
     @GetMapping
-    public ResponseEntity<List<Employee>> getAllEmployees() {
-        List<Employee> employees = employeeService.getAllEmployees();
+    public ResponseEntity<List<EmployeeResponse>> getAllEmployees() {
+        List<EmployeeResponse> employees = employeeService.getAllEmployees();
         return new ResponseEntity<>(employees, HttpStatus.OK);
     }
 
-    // GET employee by ID
+    // Get employee by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
-        Optional<Employee> employee = employeeService.getEmployeeById(id);
-        return employee.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<EmployeeResponse> getEmployeeById(@PathVariable Long id) {
+        EmployeeResponse employee = employeeService.getEmployeeById(id);
+        return new ResponseEntity<>(employee, HttpStatus.OK);
     }
 
-    // CREATE new employee
-    @PostMapping
-    public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee) {
-        Employee savedEmployee = employeeService.saveEmployee(employee);
-        return new ResponseEntity<>(savedEmployee, HttpStatus.CREATED);
-    }
-
-    // UPDATE employee
+    // Update employee
     @PutMapping("/{id}")
-    public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employee) {
-        Optional<Employee> existingEmployee = employeeService.getEmployeeById(id);
-
-        if (existingEmployee.isPresent()) {
-            employee.setEmployeeId(id);
-            Employee updatedEmployee = employeeService.saveEmployee(employee);
-            return new ResponseEntity<>(updatedEmployee, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<EmployeeResponse> updateEmployee(@PathVariable Long id, @RequestBody EmployeeRequest employeeRequest) {
+        EmployeeResponse updatedEmployee = employeeService.updateEmployee(id, employeeRequest);
+        return new ResponseEntity<>(updatedEmployee, HttpStatus.OK);
     }
 
-    // DELETE employee
+    // Delete employee
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
-        Optional<Employee> employee = employeeService.getEmployeeById(id);
-
-        if (employee.isPresent()) {
-            employeeService.deleteEmployee(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        employeeService.deleteEmployee(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

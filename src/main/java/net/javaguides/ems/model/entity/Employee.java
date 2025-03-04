@@ -1,4 +1,4 @@
-package net.javaguides.ems.entity;
+package net.javaguides.ems.model.entity;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
@@ -10,17 +10,18 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long employeeId;
 
-    @Column(name = "employee_name", nullable = false)
+    @Column(nullable = false)
     private String employeeName;
 
     @Column(nullable = false)
     private Double salary;
 
-    @Column(name = "date_of_birth", nullable = false)
+    @Column(nullable = false)
     private LocalDate dob;
 
     // Default constructor
-    public Employee() {}
+    public Employee() {
+    }
 
     // Parameterized constructor
     public Employee(String employeeName, Double salary, LocalDate dob) {
